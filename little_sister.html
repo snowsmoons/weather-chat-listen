@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .robot img {
+            height: 150px;
+        }
+        .robot li {
+            margin: 10px 0;
+        }
+        .robot li img {
+            height: 30px;
+            width: 30px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        .list-item {
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .list-enter-active,
+         .list-leave-active 
+         {
+            transition: all 1.5s;
+        }
+        .list-enter,
+         .list-leave-to
+        /* .list-leave-active for below version 2.1.8 */ {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+            <sister-chat></sister-chat>
+    </div>
+</body>
+</html>
+<script src="./lib/vue.js"></script>
+<script src="./lib/axios.min.js"></script>
+<script type="text/html" id="robot">
+    <div class="robot">
+            <img src="./img/sister.jpg" alt=""><br>
+            <input type="text" placeholder="请输入你要和小姐姐说的话" v-model.trim="message" @keyup.enter="chat">
+            <transition-group name="list" tag="ul" v-show="messageList.length!=0">
+                    <li  v-for="(item, index) in messageList" :key="item.info">
+                        <img :src="item.isMe?'./img/littleBrother.jpg':'./img/littleSister.jpg'" alt="">{{item.info}}
+                    </li>
+            </transition-group>
+    </div>
+</script>
+<script>
+    Vue.component('sister-chat', {
+        template:'#robot',
+        data:function(){
+            return{
+                message:'',
+                messageList:[]
+            }
+        },
+        methods:{
+            chat(){
+                this.messageList.push({
+                    info:this.message,
+                    isMe:true
+                });
+                
+                const params = new URLSearchParams();
+                params.append('key', 'd7c82ebd8b304abeacc73b366e42b9ed');
+                params.append('info', this.message);
+                axios.post('http://www.tuling123.com/openapi/api', params)
+                .then(response=>{
+                    console.log(response);
+                    this.message='';
+                    this.messageList.push({
+                        info:response.data.text,
+                        isMe:false
+                    })
+                }).catch(response=>{
+                    alert('系统错误!')
+                });
+            }
+        }
+    })
+    let app = new Vue({
+        el:'#app'
+    })
+</script>

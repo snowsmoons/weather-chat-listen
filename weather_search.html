@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .weather{
+            padding-left: 20px;
+        }
+        .sun{
+            height: 100px;
+            /* margin-left: 20px; */
+        }
+        input {
+            /* margin-left: 20px; */
+        }
+        .list-item {
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .list-enter-active,
+         .list-leave-active 
+         {
+            transition: all 1s;
+        }
+        .list-enter,
+         .list-leave-to
+        /* .list-leave-active for below version 2.1.8 */ {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+            <weather-component></weather-component>
+    </div>
+</body>
+</html>
+<script src="./lib/vue.js"></script>
+<script src="./lib/axios.min.js"></script>
+<script type="text/html" id="weather">
+    <div class="weather">
+            <img class="sun" src="./img/sun.jpg" alt=""><br>
+            <input type="text" placeholder="请输入城市名" v-model.trim="city" @keyup.enter="search">
+            <transition-group name="list" tag="ul" v-show="weatherList.length!=0">
+                <li :style="{transitionDelay:index*100+'ms'}" v-for="(item, index) in weatherList" :key="item.date">{{item.date}}--{{item.type}}--{{item.high}}--{{item.low}}--{{item.fengxiang}}</li>
+            </transition-group>
+    </div>
+</script>
+<script>
+    Vue.component('weather-component', {
+        template:'#weather',
+        data:function(){
+            return{
+                city:'',
+                weatherList:[]
+            }
+        },
+        methods:{
+            search(){
+                this.weatherList=[];
+                axios.get(`http://wthrcdn.etouch.cn/weather_mini?city=${this.city}`)
+                .then(response=>{
+                    this.weatherList=response.data.data.forecast;
+                    console.log(this.weatherList);
+                    this.city='';
+                }).catch(response=>{
+                    alert('出现错误,请重试!')
+                })
+            }
+        }
+    })
+    let app = new Vue({
+        el:'#app'
+    })
+</script>

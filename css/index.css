@@ -1,0 +1,104 @@
+.robot img {
+    height: 150px;
+}
+.robot li {
+    margin: 10px 0;
+}
+.robot li img {
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+.list-item {
+    display: inline-block;
+    margin-right: 10px;
+}
+.list-enter-active,
+ .list-leave-active 
+ {
+    transition: all 1.5s;
+}
+.list-enter,
+ .list-leave-to
+/* .list-leave-active for below version 2.1.8 */ {
+    opacity: 0;
+    transform: translateX(30px);
+}
+
+/* ------------------------------------------------ */
+.music {
+    display: flex;
+    height: 500px;
+    width: 100%;
+}
+.music .left{
+    height: 100%;
+    flex-basis: 350px;
+    background-color: pink;
+    overflow: hidden;
+    overflow-y: auto;
+}
+.music .left input{
+    display: block;
+    width: 80%;
+    margin: 10px auto 0;
+    border-radius: 15px;
+    height: 30px;
+    padding-left: 15px;
+    outline: none;
+    border: none;
+}
+.music .left li {
+    cursor: pointer;
+    color: blue;
+    margin: 10px 0;
+}
+.music .left li:hover{
+    background-color: skyblue;
+    color: white;
+}
+.music .right{
+    flex: 1;
+    background-color: skyblue;
+}
+.music .right img{
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    margin: 30px auto 0;
+    display: block;
+    animation: rotate linear infinite 10s;
+    animation-play-state: paused;
+}
+.music .right img.play{
+    animation: rotate linear infinite 10s;
+    animation-play-state: running;
+
+}
+.music .right audio{
+    display: block;
+    margin: 20px auto;
+    
+}
+
+@keyframes rotate {
+    from{
+
+    }
+    to{
+        transform: rotate(360deg);
+    }
+}
+
+/* ----------------------------------------- */
+.weather{
+    padding-left: 20px;
+}
+.sun{
+    height: 100px;
+    /* margin-left: 20px; */
+}
+input {
+    /* margin-left: 20px; */
+}

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .music {
+            display: flex;
+            height: 500px;
+            width: 100%;
+        }
+        .music .left{
+            height: 100%;
+            flex-basis: 350px;
+            background-color: pink;
+            overflow: hidden;
+            overflow-y: auto;
+        }
+        .music .left input{
+            display: block;
+            width: 80%;
+            margin: 10px auto 0;
+            border-radius: 15px;
+            height: 30px;
+            padding-left: 15px;
+            outline: none;
+            border: none;
+        }
+        .music .left li {
+            cursor: pointer;
+            color: blue;
+            margin: 10px 0;
+        }
+        .music .left li:hover{
+            background-color: skyblue;
+            color: white;
+        }
+        .music .right{
+            flex: 1;
+            background-color: skyblue;
+        }
+        .music .right img{
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            margin: 30px auto 0;
+            display: block;
+            animation: rotate linear infinite 10s;
+            animation-play-state: paused;
+        }
+        .music .right img.play{
+            animation: rotate linear infinite 10s;
+            animation-play-state: running;
+
+        }
+        .music .right audio{
+            display: block;
+            margin: 20px auto;
+            
+        }
+
+        @keyframes rotate {
+            from{
+
+            }
+            to{
+                transform: rotate(360deg);
+            }
+        }
+
+        .list-item {
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .list-enter-active
+         {
+            transition: all 1s;
+        }
+         .list-leave-active{
+             transition: none;
+         } 
+        .list-enter,
+         .list-leave-to
+        /* .list-leave-active for below version 2.1.8 */ {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+            <music-play></music-play>
+    </div>
+</body>
+</html>
+<script src="./lib/vue.js"></script>
+<script src="./lib/axios.min.js"></script>
+<script type="text/html" id="music">
+    <div class="music">
+            <div class="left">
+                <input type="text" placeholder="请输入歌名" v-model.trim="keyword" @keyup.enter="search">
+                <transition-group name="list" tag="ul" v-show="musicList.length!=0">
+                    <li @click="playMusic(item.id)" :style="{transitionDelay:index*10+'ms'}" v-for="(item, index) in musicList" :key="item.id">{{item.name}}--{{item.artists[0].name}}</li>
+                </transition-group>
+            </div>
+            <div class="right">
+                <img :class="{play:isPlay}" :src="picUrl" alt="">
+                <audio @play="play" @pause="pause" :src="musicUrl" controls ></audio>
+            </div>
+        </div>
+</script>
+<script>
+    Vue.component('music-play', {
+        template:'#music',
+        data:function(){
+            return{
+                keyword:'',
+                musicList:[],
+                musicUrl:'',
+                picUrl:'./img/noExist.jpg',
+                isPlay:false
+            }
+        },
+        methods:{
+            search(){
+                    this.musicList=[];
+                    // console.log(this.musicList.length);
+                axios.get(`http://39.108.140.202:3000/search?keywords=${this.keyword}`)
+                .then(response=>{                    
+                    this.keyword='';
+                    this.musicList=response.data.result.songs
+                    console.log(this.musicList);
+                }).catch(response=>{
+                    alert('系统错误,请重试!')
+                })
+            },
+            playMusic(id){
+                this.isPlay=false;
+                axios.get(`http://39.108.140.202:3000/music/url?id=${id}`)
+                .then(response=>{
+                    this.musicUrl='';
+                    this.musicUrl=response.data.data[0].url;
+                    // console.log(this.musicUrl);
+
+                }).catch(response=>{
+                    alert('加载失败!')
+                });
+                axios.get(`http://39.108.140.202:3000/song/detail?ids=${id}`)
+                .then(response=>{
+                    this.picUrl='';
+                    this.picUrl=response.data.songs[0].al.picUrl;
+                    console.log(this.picUrl);
+                }).catch(response=>{
+                    alert('加载失败!')
+                })
+            },
+            play(){
+                this.isPlay=true;
+            },
+            pause(){
+                this.isPlay=false;
+            }
+        }
+    })
+    let app = new Vue({
+        el:'#app'
+    })
+</script>
